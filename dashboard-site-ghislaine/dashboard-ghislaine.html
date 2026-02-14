@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau de bord — Ghislaine Morin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sage: #7a9e7e;
+    --sage-light: #c4d8c6;
+    --sage-pale: #eef4ef;
+    --ink: #1a2118;
+    --ink-mid: #3d4e3a;
+    --ink-soft: #6b7d68;
+    --gold: #c4933f;
+    --gold-pale: #f9f0e1;
+    --terracotta: #c4664a;
+    --paper: #faf8f4;
+    --white: #ffffff;
+    --border: #dde8de;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* === HEADER === */
+  .header {
+    background: var(--ink);
+    padding: 3rem 4rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    border: 1px solid rgba(196,147,63,0.15);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; right: 80px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    border: 1px solid rgba(122,158,126,0.2);
+  }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .header-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 300;
+    color: var(--white);
+    letter-spacing: 0.02em;
+  }
+  .header-name span {
+    color: var(--sage-light);
+    font-style: italic;
+  }
+  .header-sub {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+  }
+  .header-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.3rem;
+  }
+  .badge {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .badge-mtc { background: rgba(122,158,126,0.2); color: var(--sage-light); }
+  .badge-sophro { background: rgba(196,147,63,0.2); color: #d4aa6a; }
+
+  .header-period {
+    margin-top: 1.8rem;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .period-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--sage);
+  }
+
+  /* === LAYOUT === */
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+
+  /* === SECTION TITLE === */
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 500;
+    margin-bottom: 1.2rem;
+    margin-top: 2.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* === KPI GRID === */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .kpi-card {
+    background: var(--white);
+    padding: 1.8rem 1.6rem;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .kpi-card:hover { background: var(--sage-pale); }
+  .kpi-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 500;
+    margin-bottom: 0.8rem;
+  }
+  .kpi-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .kpi-value.accent { color: var(--sage); }
+  .kpi-value.gold { color: var(--gold); }
+  .kpi-sub {
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    margin-top: 0.5rem;
+  }
+  .kpi-trend {
+    font-size: 0.72rem;
+    font-weight: 500;
+    margin-top: 0.4rem;
+  }
+  .trend-up { color: var(--sage); }
+  .trend-down { color: var(--terracotta); }
+  .trend-neutral { color: var(--ink-soft); }
+
+  /* === TIMELINE CHART === */
+  .chart-wrapper {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+  }
+  .chart-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+  }
+  .chart-desc {
+    font-size: 0.76rem;
+    color: var(--ink-soft);
+    margin-bottom: 2rem;
+  }
+
+  .bar-chart {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 6px;
+    align-items: end;
+    height: 180px;
+  }
+  .bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+  .bar-month-label {
+    font-size: 0.64rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-top: 6px;
+    white-space: nowrap;
+  }
+  .bar-val {
+    font-size: 0.68rem;
+    color: var(--ink-mid);
+    font-weight: 500;
+  }
+  .bar-stack {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    overflow: hidden;
+  }
+  .bar-sophro {
+    background: var(--sage);
+    transition: opacity 0.2s;
+  }
+  .bar-mtc {
+    background: var(--gold);
+    transition: opacity 0.2s;
+  }
+  .bar-disp {
+    background: #b8d4bb;
+    transition: opacity 0.2s;
+  }
+  .bar-group:hover .bar-sophro { opacity: 0.8; }
+  .bar-group:hover .bar-mtc { opacity: 0.8; }
+
+  .chart-legend {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1.2rem;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+  }
+
+  /* === TWO COL === */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+
+  /* === FIDELISATION === */
+  .fid-chart {
+    display: grid;
+    grid-template-columns: repeat(14, 1fr);
+    gap: 4px;
+    margin-top: 1.5rem;
+  }
+  .fid-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .fid-bar-wrap {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 1px;
+    border-radius: 4px 4px 0 0;
+    overflow: hidden;
+  }
+  .fid-returning {
+    background: var(--gold);
+    width: 100%;
+  }
+  .fid-new {
+    background: var(--sage-light);
+    width: 100%;
+  }
+  .fid-pct {
+    font-size: 0.6rem;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .fid-mlabel {
+    font-size: 0.58rem;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-top: 4px;
+    text-align: center;
+  }
+
+  /* === PATIENTS TABLE === */
+  .patients-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 1rem;
+  }
+  .patient-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 8px;
+    background: var(--paper);
+    border: 1px solid transparent;
+    transition: all 0.2s;
+  }
+  .patient-row:hover { border-color: var(--border); background: var(--white); }
+  .patient-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--sage-pale);
+    border: 1.5px solid var(--sage-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85rem;
+    color: var(--sage);
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .patient-name {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--ink);
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .patient-visits {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .visit-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--sage);
+    opacity: 0.6;
+  }
+  .visit-dot.active { opacity: 1; }
+  .visit-count {
+    font-size: 0.75rem;
+    color: var(--sage);
+    font-weight: 600;
+    margin-left: 4px;
+  }
+
+  /* === CANCELLATIONS === */
+  .cancel-list { margin-top: 0.8rem; }
+  .cancel-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.8rem;
+  }
+  .cancel-item:last-child { border-bottom: none; }
+  .cancel-name { color: var(--ink); font-weight: 500; }
+  .cancel-date { color: var(--ink-soft); font-size: 0.72rem; }
+  .cancel-reason {
+    font-size: 0.7rem;
+    color: var(--terracotta);
+    background: #fdf0ec;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* === WEEK ACTIVITY === */
+  .week-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 1rem;
+  }
+  .week-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .week-label {
+    font-size: 0.68rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    width: 70px;
+    flex-shrink: 0;
+  }
+  .week-bar-wrap {
+    flex: 1;
+    height: 18px;
+    background: var(--sage-pale);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+  }
+  .week-segment {
+    height: 100%;
+    transition: width 0.5s ease;
+  }
+  .week-count {
+    font-size: 0.68rem;
+    color: var(--ink-soft);
+    flex-shrink: 0;
+    width: 20px;
+    text-align: right;
+  }
+
+  /* === INSIGHT BOX === */
+  .insight-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+  }
+  .insight-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.6rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .insight-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+  }
+  .insight-card.green::before { background: var(--sage); }
+  .insight-card.gold::before { background: var(--gold); }
+  .insight-card.warn::before { background: var(--terracotta); }
+  .insight-icon {
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
+  }
+  .insight-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+  }
+  .insight-text {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .insight-metric {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--sage);
+    margin-top: 0.6rem;
+  }
+  .insight-card.gold .insight-metric { color: var(--gold); }
+  .insight-card.warn .insight-metric { color: var(--terracotta); }
+
+  /* === FOOTER === */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.7rem;
+    color: rgba(107,125,104,0.5);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-top: 1px solid var(--border);
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    .insight-grid { grid-template-columns: 1fr; }
+    .header { padding: 2rem; }
+    .bar-chart { gap: 3px; }
+    .fid-chart { grid-template-columns: repeat(7, 1fr); }
+    .fid-col:nth-child(n+8) { display: none; }
+  }
+
+  /* === ANIMATIONS === */
+  .kpi-card, .chart-wrapper, .insight-card {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.5s ease forwards;
+  }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .kpi-card:nth-child(1) { animation-delay: 0.05s; }
+  .kpi-card:nth-child(2) { animation-delay: 0.1s; }
+  .kpi-card:nth-child(3) { animation-delay: 0.15s; }
+  .kpi-card:nth-child(4) { animation-delay: 0.2s; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-name">Ghislaine <span>Morin</span></div>
+      <div class="header-sub">Rapport d'activité · Centre Équilibre, Grenoble</div>
+    </div>
+    <div class="header-badge">
+      <span class="badge badge-mtc">Médecine Traditionnelle Chinoise</span>
+      <span class="badge badge-sophro">Sophrologie</span>
+    </div>
+  </div>
+  <div class="header-period">
+    <span class="period-dot"></span>
+    Fév 2025 — Fév 2026 · Rapport annuel de lancement
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- KPIs -->
+  <div class="section-label">Vue d'ensemble</div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Séances réalisées</div>
+      <div class="kpi-value accent">110</div>
+      <div class="kpi-sub">sur 126 planifiées</div>
+      <div class="kpi-trend trend-up">↑ Croissance régulière</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Patients uniques</div>
+      <div class="kpi-value">68</div>
+      <div class="kpi-sub">dont 27 ont reconsulté</div>
+      <div class="kpi-trend trend-up">✦ 40% de fidélisation</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Taux de réalisation</div>
+      <div class="kpi-value gold">87%</div>
+      <div class="kpi-sub">16 annulations sur l'année</div>
+      <div class="kpi-trend trend-neutral">◇ Stable et solide</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Séances / semaine moy.</div>
+      <div class="kpi-value accent">2,4</div>
+      <div class="kpi-sub">montée en charge progressive</div>
+      <div class="kpi-trend trend-up">↑ Jusqu'à 10 sem. S09-2026</div>
+    </div>
+  </div>
+
+  <!-- ÉVOLUTION MENSUELLE -->
+  <div class="section-label">Activité mensuelle</div>
+  <div class="chart-wrapper">
+    <div class="chart-title">Évolution des consultations par mois</div>
+    <div class="chart-desc">Séances confirmées, hors annulations — répartition par discipline</div>
+    <div class="bar-chart" id="barChart"></div>
+    <div class="chart-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--sage)"></div>Sophrologie</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>MTC individuelle</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#b8d4bb"></div>Dispensaire MTC</div>
+    </div>
+  </div>
+
+  <!-- FIDÉLISATION + ANNULATIONS -->
+  <div class="two-col">
+    <div class="chart-wrapper">
+      <div class="chart-title">Fidélisation mensuelle</div>
+      <div class="chart-desc">Part de patients en retour vs. nouveaux patients</div>
+      <div class="fid-chart" id="fidChart"></div>
+      <div class="chart-legend" style="margin-top:0.8rem">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Retours</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--sage-light)"></div>Nouveaux</div>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <div class="chart-title">Annulations</div>
+      <div class="chart-desc">16 rendez-vous annulés sur la période (13%)</div>
+      <div class="cancel-list" id="cancelList"></div>
+    </div>
+  </div>
+
+  <!-- TOP PATIENTS -->
+  <div class="section-label">Patients fidèles</div>
+  <div class="chart-wrapper">
+    <div class="chart-title">Patients avec plusieurs consultations</div>
+    <div class="chart-desc">27 patients sur 68 ont reconsulté — taux de retour de 40%</div>
+    <div class="patients-grid" id="patientsGrid"></div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="section-label">Observations clés</div>
+  <div class="insight-grid">
+    <div class="insight-card green" style="animation-delay:0.1s">
+      <div class="insight-icon">🌱</div>
+      <div class="insight-title">Activité en croissance</div>
+      <div class="insight-text">L'activité a démarré avec 8 séances en février 2025 pour atteindre un pic de 18 en février 2026, marqué par l'organisation du Dispensaire MTC.</div>
+      <div class="insight-metric">+125%</div>
+    </div>
+    <div class="insight-card gold" style="animation-delay:0.2s">
+      <div class="insight-icon">💛</div>
+      <div class="insight-title">Fidélisation solide</div>
+      <div class="insight-text">40% des patients sont revenus consulter, avec des pics à 83% en janvier 2026. Signe d'une satisfaction patiente forte dès le démarrage.</div>
+      <div class="insight-metric">40%</div>
+    </div>
+    <div class="insight-card warn" style="animation-delay:0.3s">
+      <div class="insight-icon">🍂</div>
+      <div class="insight-title">Creux estival</div>
+      <div class="insight-text">Juillet–Août 2025 montrent un ralentissement marqué (3–4 séances/mois). Un suivi proactif des patients avant l'été peut atténuer cet effet.</div>
+      <div class="insight-metric">–65%</div>
+    </div>
+  </div>
+
+  <!-- RÉPARTITION DISCIPLINES -->
+  <div class="section-label">Répartition par discipline</div>
+  <div class="chart-wrapper">
+    <div class="chart-title">Volume d'activité par type de séance</div>
+    <div class="chart-desc">110 séances confirmées sur la période</div>
+    <div class="week-grid" id="disciplineChart"></div>
+  </div>
+
+</div>
+
+<div class="footer">Centre Équilibre · 29 Quai Claude Bernard, 38000 Grenoble · Rapport généré automatiquement</div>
+
+<script>
+// === DONNÉES ===
+const monthlyData = [
+  { m: 'Fév', sophro: 1, mtc: 5, disp: 0, total: 6, new: 6, ret: 2 },
+  { m: 'Mar', sophro: 7, mtc: 5, disp: 4, total: 16, new: 9, ret: 7 },
+  { m: 'Avr', sophro: 2, mtc: 2, disp: 1, total: 5, new: 3, ret: 2 },
+  { m: 'Mai', sophro: 7, mtc: 3, disp: 3, total: 13, new: 5, ret: 8 },
+  { m: 'Jun', sophro: 2, mtc: 0, disp: 3, total: 5, new: 3, ret: 2 },
+  { m: 'Jul', sophro: 2, mtc: 1, disp: 0, total: 3, new: 1, ret: 2 },
+  { m: 'Aoû', sophro: 2, mtc: 1, disp: 0, total: 3, new: 2, ret: 1 },
+  { m: 'Sep', sophro: 5, mtc: 4, disp: 1, total: 10, new: 6, ret: 4 },
+  { m: 'Oct', sophro: 5, mtc: 0, disp: 0, total: 7, new: 2, ret: 5 },
+  { m: 'Nov', sophro: 4, mtc: 2, disp: 1, total: 7, new: 4, ret: 3 },
+  { m: 'Déc', sophro: 6, mtc: 2, disp: 0, total: 9, new: 5, ret: 4 },
+  { m: 'Jan', sophro: 3, mtc: 1, disp: 2, total: 6, new: 1, ret: 5 },
+];
+
+const maxTotal = Math.max(...monthlyData.map(d => d.total));
+const chartHeight = 160;
+
+// === BAR CHART ===
+const barChartEl = document.getElementById('barChart');
+monthlyData.forEach((d, i) => {
+  const group = document.createElement('div');
+  group.className = 'bar-group';
+  const scale = d.total / maxTotal;
+  const dispH = Math.round((d.disp / maxTotal) * chartHeight);
+  const mtcH = Math.round((d.mtc / maxTotal) * chartHeight);
+  const sophroH = Math.round((d.sophro / maxTotal) * chartHeight);
+  group.innerHTML = `
+    <div class="bar-val">${d.total}</div>
+    <div class="bar-stack" style="height:${dispH + mtcH + sophroH}px">
+      <div class="bar-sophro" style="height:${sophroH}px"></div>
+      <div class="bar-mtc" style="height:${mtcH}px"></div>
+      <div class="bar-disp" style="height:${dispH}px"></div>
+    </div>
+    <div class="bar-month-label">${d.m}</div>
+  `;
+  barChartEl.appendChild(group);
+});
+
+// === FIDÉLISATION ===
+const fidChartEl = document.getElementById('fidChart');
+monthlyData.forEach((d, i) => {
+  const col = document.createElement('div');
+  col.className = 'fid-col';
+  const totalFid = d.new + d.ret;
+  const retH = totalFid > 0 ? Math.round((d.ret / (totalFid)) * 100) : 0;
+  const newH = 100 - retH;
+  const pct = totalFid > 0 ? Math.round(d.ret / totalFid * 100) : 0;
+  col.innerHTML = `
+    <div class="fid-pct">${pct}%</div>
+    <div class="fid-bar-wrap">
+      <div class="fid-new" style="height:${newH}px"></div>
+      <div class="fid-returning" style="height:${retH}px"></div>
+    </div>
+    <div class="fid-mlabel">${d.m}</div>
+  `;
+  fidChartEl.appendChild(col);
+});
+
+// === ANNULATIONS ===
+const cancellations = [
+  { name: 'Taïs Cuny', date: '26 Mar 2025', type: 'Sophrologie', reason: '—' },
+  { name: 'Lucy Ruffier', date: '6 Jun 2025', type: 'Dispensaire', reason: 'Médecin famille' },
+  { name: 'Maxence Bergonzoli', date: '16 Mai 2025', type: 'Sophrologie', reason: '—' },
+  { name: 'Ezzine', date: '7 Jun 2025', type: 'MTC', reason: 'Empêchement dernier minute' },
+  { name: 'Delphine Laurant', date: '10 Jul 2025', type: 'MTC', reason: 'Report RDV' },
+  { name: 'Yamina Douhane', date: '19 Nov 2025', type: 'Sophrologie', reason: 'État grippal' },
+  { name: 'Cécile Jehan (x2)', date: 'Oct 2025', type: 'Sophrologie', reason: 'Changement horaire' },
+  { name: 'Melanie Bonnel (x2)', date: 'Déc–Fév', type: 'MTC', reason: 'Prof.' },
+  { name: 'Claudette Guiga', date: '10 Fév 2026', type: 'Sophrologie', reason: 'Hospitalisation' },
+];
+const cancelEl = document.getElementById('cancelList');
+cancellations.slice(0, 7).forEach(c => {
+  const div = document.createElement('div');
+  div.className = 'cancel-item';
+  div.innerHTML = `
+    <div>
+      <div class="cancel-name">${c.name}</div>
+      <div class="cancel-date">${c.date} · ${c.type}</div>
+    </div>
+    <div class="cancel-reason">${c.reason}</div>
+  `;
+  cancelEl.appendChild(div);
+});
+
+// === PATIENTS FIDÈLES ===
+const topPatients = [
+  { name: 'Azema / Cecile Azema', visits: 6 },
+  { name: 'Orane Seret', visits: 5 },
+  { name: 'Melanie Bonnel', visits: 4 },
+  { name: 'Lou-anne Guilloud', visits: 4 },
+  { name: 'Clémence Givord', visits: 3 },
+  { name: 'ANTHONY JANIN', visits: 3 },
+  { name: 'ADELINE LANGREZ', visits: 3 },
+  { name: 'Cécile Jehan', visits: 3 },
+  { name: 'Agathe Loebell', visits: 3 },
+  { name: 'KARINE VAUCHER', visits: 3 },
+  { name: 'Amélie RIVOIRE', visits: 2 },
+  { name: 'LANDAS Sylvie', visits: 2 },
+  { name: 'Solveig Ganivet-Mathiau', visits: 2 },
+  { name: 'Brenneur Marine', visits: 2 },
+  { name: 'Marie Villaume', visits: 2 },
+  { name: 'Sonia Chabot', visits: 2 },
+];
+const patientsEl = document.getElementById('patientsGrid');
+topPatients.forEach(p => {
+  const initials = p.name.split(' ').slice(0,2).map(s => s[0]).join('').toUpperCase().slice(0,2);
+  const dots = Math.min(p.visits, 6);
+  const dotsHtml = Array(dots).fill(0).map((_, i) => 
+    `<div class="visit-dot ${i < p.visits ? 'active' : ''}"></div>`
+  ).join('');
+  const div = document.createElement('div');
+  div.className = 'patient-row';
+  div.innerHTML = `
+    <div class="patient-avatar">${initials}</div>
+    <div class="patient-name">${p.name}</div>
+    <div class="patient-visits">
+      ${dotsHtml}
+      <div class="visit-count">×${p.visits}</div>
+    </div>
+  `;
+  patientsEl.appendChild(div);
+});
+
+// === DISCIPLINES ===
+const disciplines = [
+  { label: 'Sophrologie individuelle', count: 69, color: 'var(--sage)' },
+  { label: 'MTC individuelle', count: 31, color: 'var(--gold)' },
+  { label: 'Dispensaire MTC (collectif)', count: 23, color: '#b8d4bb' },
+  { label: 'Séances combinées Sophro + MTC', count: 11, color: '#d4c4a0' },
+  { label: 'Bilan gratuit', count: 1, color: '#e0ddd8' },
+];
+const total = disciplines.reduce((s, d) => s + d.count, 0);
+const discEl = document.getElementById('disciplineChart');
+disciplines.forEach(d => {
+  const pct = Math.round(d.count / total * 100);
+  const barW = Math.round(d.count / total * 100);
+  const row = document.createElement('div');
+  row.className = 'week-row';
+  row.innerHTML = `
+    <div class="week-label" style="font-size:0.7rem">${d.label}</div>
+    <div class="week-bar-wrap">
+      <div class="week-segment" style="width:${barW}%;background:${d.color}"></div>
+    </div>
+    <div class="week-count">${d.count}</div>
+    <div style="font-size:0.65rem;color:var(--ink-soft);width:28px;flex-shrink:0">${pct}%</div>
+  `;
+  discEl.appendChild(row);
+});
+</script>
+</body>
+</html>
